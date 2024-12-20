@@ -588,8 +588,8 @@ body.nav-active { overflow: hidden; }
   #TOPBAR
 \*-----------------------------------*/
 
-.topbar { display: none; }
-
+/* .topbar { display: none; }
+ */
 
 
 
@@ -1477,7 +1477,7 @@ textarea.input-field {
    * TOPBAR
    */
 
-  .topbar {
+  /* .topbar {
     display: block;
     position: fixed;
     top: 0;
@@ -1515,7 +1515,7 @@ textarea.input-field {
 
   .topbar .link:is(:hover, :focus-visible) { color: var(--gold-crayola); }
 
-
+ */
 
   /**
    * HEADER

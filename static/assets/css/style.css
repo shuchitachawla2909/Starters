@@ -588,9 +588,9 @@ body.nav-active { overflow: hidden; }
 /*-----------------------------------*\
   #TOPBAR
 \*-----------------------------------*/
-
+/* 
 .topbar { display: none; }
-
+ */
 
 
 
@@ -607,7 +607,7 @@ body.nav-active { overflow: hidden; }
   left: 0;
   width: 100%;
   background-color: transparent;
-  padding-block: 40px;
+  padding-block: 20px;
   z-index: 4;
   border-block-end: 1px solid transparent;
   transition: var(--transition-1);
@@ -1485,7 +1485,7 @@ textarea.input-field {
    * TOPBAR
    */
 
-  .topbar {
+  /* .topbar {
     display: block;
     position: fixed;
     top: 0;
@@ -1521,7 +1521,7 @@ textarea.input-field {
 
   .topbar .link { transition: var(--transition-1); }
 
-  .topbar .link:is(:hover, :focus-visible) { color: var(--gold-crayola); }
+  .topbar .link:is(:hover, :focus-visible) { color: var(--gold-crayola); } */
 
 
 
@@ -1529,7 +1529,7 @@ textarea.input-field {
    * HEADER
    */
 
-  .header { top: 51px; }
+  .header { top: 10px; }
 
   .header.active { top: 0; }
 
