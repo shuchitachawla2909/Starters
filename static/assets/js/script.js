@@ -70,5 +70,18 @@ const scrollActive = () => {
 window.addEventListener('scroll',scrollActive)
 
 
-/*===== MENU HIDE =====*/
+/*===== SCROLL REVEAL =====*/
+const sr=ScrollReveal({
+  origin:'top',
+  distance: '60px',
+  duration:3000,
+  delay: 400,
+
+})
+
+sr.reveal('.home_data,.footer_container');
+sr.reveal('.home_card',{delay:500,distance:'100px',interval:100});
+sr.reveal('.about_data',{origin:'right'});
+sr.reveal('.about_img',{origin:'left'});
+
 /*===== MENU HIDE =====*/
