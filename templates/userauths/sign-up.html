@@ -1,9 +1,67 @@
 {% extends 'partials/base.html'%}
 {% load static %}
-{% block content%}
-<form action="" method="POST">
-  {% csrf_token %}
-  {{form.as_p}}
-  <button type="submit">Register</button>
-</form>
-{% endblock content%}
+{% block content %}
+  <div class="container">
+    <div class="content">
+      <!-- <h2 class="logo">Starters</h2> -->
+
+      <div class="text-sci">
+        <h2 >Welcome!<br><span>Ready to discover the magic?</span></h2>
+        <p>Explore the best food around here.<br>Explore, find, share and repeat!</p>
+        <div class="social-icons">
+          <a href="#"><i class='bx bxl-linkedin-square'></i></a>
+          <a href="#"><i class='bx bxl-instagram' ></i></a>
+          <a href="#"><i class='bx bxl-github' ></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="logreg-box">
+      <div class="form-box reg">
+        {%if form.errors%}
+        <div class="alert alert-danger"><strong>{{form.errors}}</strong></div>
+        {% endif%}
+        
+        <form action="" method="POST" class="register-form">
+          {% csrf_token %}
+          <h2>Sign Up</h2>
+          <div class="input-box">
+            <span class="icon"><i class='bx bxs-user' ></i></span>
+            <input type="text" name="username"required>
+            <label>Name</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class='bx bxl-gmail' ></i></span>
+            <input type="email" name="email" required>
+            <label>Email</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class='bx bx-lock-alt' ></i></span>
+            <input type="password" name="password1" required>
+            <label>Password</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class='bx bx-lock-alt'></i></span>
+            <input type="password" name="password2" required>
+            <label>Confirm Password</label>
+          </div>
+          <div class="remember-forgot">
+            <label><input type="checkbox">I agree to good food terms and conditions.</label>
+            
+          </div>
+          <button type="submit" class="btn">Register</button>
+          <div class="login-register">
+            <p>Already have an account?  <a href="{% url 'userauths:sign-in'%}" class="login-link">Sign In</a></p>
+          </div>
+        </form>
+      </div>
+
+
+    </div>
+
+  </div>
+
+{% endblock%}
+
+
+
+
