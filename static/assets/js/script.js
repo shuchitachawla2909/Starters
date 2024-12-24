@@ -38,5 +38,37 @@ const linkAction = () => {
 }
 navLink.forEach(n => n.addEventListener('click', linkAction))
 
+/*===== ABB BLUR TO HEADER =====*/
+const blurHeader = () =>{
+  const header = document.getElementById('header')
+  // When the scroll is greater than 50 viewport height, add the blur-header class to the header tag
+  this.scrollY >= 50? header.classList.add('blur-header')
+                    : header.classList.remove('blur-header')
+  }
+  window.addEventListener('scroll', blurHeader)
+
+
+/*===== ACTIVE LINK =====*/
+const sections=document.querySelectorAll('section[id]')
+const scrollActive = () => {
+  const scrollY=window.scrollY;
+  
+  sections.forEach(current =>{
+    const sectionHeight=current.offsetHeight,
+          sectionTop=current.offsetTop-58,
+          sectionId=current.getAttribute('id'),
+          sectionsClass=document.querySelector('.nav_menu a[href*=' + sectionId+ ']');
+
+    if (scrollY>sectionTop && scrollY<=sectionTop+sectionHeight){
+      sectionsClass.classList.add('active-link')
+    }
+    else{
+      sectionsClass.classList.remove('active-link')
+    }
+  })
+}
+window.addEventListener('scroll',scrollActive)
+
+
 /*===== MENU HIDE =====*/
 /*===== MENU HIDE =====*/
