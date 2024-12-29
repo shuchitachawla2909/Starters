@@ -1,0 +1,103 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+  <section class="rest section" id="rest">
+      <div class="rest_container grid">
+
+        <div class="rest_data">
+          <h3 class="rest_subtitle">
+            Add some good places to everyone's list.
+          </h3>
+          <h1 class="rest_title">
+            Visit the Best
+          </h1>
+          <p class="rest_description">
+          </p>
+        </div>
+
+        {%for resturant in restaurants%}
+          <div class="rest_cards grid">
+            <article class="rest_card">
+              {% if restaurant_images.image %}
+                <img src="restaurant_images.image.url" alt="" class="rest_card-img">
+              {% else %}
+                <img src="{% static 'assets/images/starters-logo (2).png'%}" alt="" class="rest_card-img">
+
+              {% endif %}
+              <div class="rest_info grid">
+                <h2 class="rest_card-name">{{ resturant.name }}</h2>
+                <h3 class="rest_card-address">{{ resturant.address }}</h3>
+                <h3 class="rest_card-rating">Rating: {{ resturant.rating }}</h3>
+                <p class="rest_card-posted-by">Posted by: {{ resturant.posted_by }}</p>
+              </div>
+
+
+              
+
+            </article>
+          </div>
+        {% endfor %}
+
+      </div>
+    
+
+
+
+      
+   </section>
+
+{% endblock %}
+
+<!-- if restaurant_images.image else static('assets/images/starters-logo (2).png') -->
+
+<!-- <img src="{% static 'assets/images/varanasi-night.jpg'%}"
+srcset="{% static 'assets/images/varanasi-night.jpg' %} 768w,
+{% static 'assets/images/home-bg.jpg' %} 1023w"
+alt="home image" class="home_bg">
+<div class="home_shadow"></div>
+<div class="home_container container grid">
+  <div class="home_data">
+    <h3 class="home_subtitle">
+      Welcome to a Foody and Moody Banaras
+    </h3>
+    <h1 class="home_title">
+      Explore the Hits of a New City
+    </h1>
+    <p class="home_description">
+    </p>
+    <a href="#" class="button">
+      Start Exploring Now <i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+
+  <div class="home_cards grid">
+    <article class="home_card">
+      <img src="{% static 'assets/images/home-card-cafe.png'%}" alt="home image" class="home_card-img">
+      <h3 class="home_card-title">Cafes</h3>
+      <div class="home_card-shadow"></div>
+    </article>
+
+    <article class="home_card">
+      <img src="{% static 'assets/images/home-card-restaurant.jpg'%}" alt="home image" class="home_card-img">
+      <h3 class="home_card-title">Restaurants</h3>
+      <div class="home_card-shadow"></div>
+    </article>
+
+    <article class="home_card">
+      <img src="{% static 'assets/images/home-card-local.jpg'%}" alt="home image" class="home_card-img">
+      <h3 class="home_card-title">Locals</h3>
+      <div class="home_card-shadow"></div>
+    </article>
+
+    <article class="home_card">
+      <img src="{% static 'assets/images/home-card-party.jpg'%}" alt="home image" class="home_card-img">
+      <h3 class="home_card-title">Party</h3>
+      <div class="home_card-shadow"></div>
+    </article>
+    <article class="home_card">
+      <img src="{% static 'assets/images/home-card-desserts.jpg'%}" alt="home image" class="home_card-img">
+      <h3 class="home_card-title">Desserts</h3>
+      <div class="home_card-shadow"></div>
+    </article>
+  </div>
+</div> -->

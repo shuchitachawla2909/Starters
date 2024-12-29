@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'crispy_forms',
+    'crispy_bootstrap5',
     #custom Apps
     'rest.apps.restConfig',
     'userauths',
@@ -133,19 +135,24 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 
 SITE_ID = 1
 
+CRISPY_TEMPLATE_PACK='bootstrap5'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL= 'userauths.User'
 
+LOGIN_REDIRECT_URL='home'
+LOGIN_URL='userauths:sign-in'
 
-EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=os.environ.get('EMAIL_USER')
-EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_PASS')
-DISPLAY_NAME = "Starters"
-DONOT_REPLY_EMAIL = "noreply@gamil.com"
-CURRENT_SITE = "localhost:8000"
-GOMAPS_API_KEY=os.environ.get('GOMAPS_API_KEY')
+
+# EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST='smtp.gmail.com'
+# EMAIL_PORT=587
+# EMAIL_USE_TLS=True
+# EMAIL_HOST_USER=os.environ.get('EMAIL_USER')
+# EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_PASS')
+# DISPLAY_NAME = "Starters"
+# DONOT_REPLY_EMAIL = "noreply@gamil.com"
+# CURRENT_SITE = "localhost:8000"
+# GOMAPS_API_KEY=os.environ.get('GOMAPS_API_KEY')
