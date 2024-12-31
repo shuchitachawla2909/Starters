@@ -1,0 +1,123 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+<section class="add_rest section" id="add_rest"> 
+  <h1>Add Restaurant</h1>
+  <input type="text" id="search-input" placeholder="Search for a restaurant">
+  <ul id="autocomplete-suggestions"></ul>
+  <button id="add-manually">Add Manually</button>
+
+  <div id="restaurant-form" style="display: none;">
+    <h2>Restaurant Details</h2>
+    <!-- Form for Adding Restaurant -->
+    <form id="add-restaurant-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Restaurant Name -->
+        <label for="name">Restaurant Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <!-- Address Field -->
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required><br><br>
+
+        <!-- Latitude and Longitude (Auto-filled) -->
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" readonly><br><br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" readonly><br><br>
+
+        <!-- Tags -->
+        <label for="tags">Tags (e.g., Cafe, Fast Food):</label>
+        <input type="text" id="tags" name="tags"><br><br>
+
+        <!-- Rating -->
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" id="rating" name="rating" step="0.1" min="1" max="5" required><br><br>
+
+        <!-- Review -->
+        <label for="review">Review:</label>
+        <textarea id="review" name="review"></textarea><br><br>
+
+        <label for="image">Upload Image:</label>
+        <input type="file" name="image" id="image" accept="image/*">
+
+        <!-- Submit Button -->
+        <button type="submit">Add Restaurant</button>
+    </form>
+    </div>
+
+    <script>
+        const apiKey = "5453fd136f59455389f1b49116c65013";
+        const searchInput = document.getElementById("search-input");
+        const suggestions = document.getElementById("autocomplete-suggestions");
+        const boundingBox = "filter=rect:82.9547896186507,25.20074192459107,83.05172449423014,25.310975518087687";
+        const formContainer = document.getElementById("restaurant-form");
+        const nameField = document.getElementById("name");
+        const addManuallyButton = document.getElementById("add-manually");
+        const addressField = document.getElementById("address");
+        const latitudeField = document.getElementById("latitude");
+        const longitudeField = document.getElementById("longitude");
+
+        addManuallyButton.addEventListener("click", () => {
+          formContainer.style.display = "block"; // Show the form
+          nameField.value = ""; // Clear any pre-filled values
+          addressField.value = "";
+        });
+
+      // Autocomplete functionality
+      searchInput.addEventListener("input", () => {
+        const text = searchInput.value;
+        if (text.length > 2) {
+          fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(text)}&${boundingBox}&format=json&apiKey=${apiKey}`)
+            .then(response => response.json())
+            .then(result => {
+              suggestions.innerHTML = "";  // Clear existing suggestions
+              result.results.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.formatted;
+
+                // Event listener to handle selection of an address
+                li.addEventListener("click", () => {
+                  nameField.value = item.name || ""; // Set name if available
+                  addressField.value = item.formatted;
+
+                  // Populate latitude and longitude fields
+                  latitudeField.value = item.lat || "";  // Auto-fill latitude
+                  longitudeField.value = item.lon || "";  // Auto-fill longitude
+
+                  formContainer.style.display = "block";  // Show the form
+                  suggestions.innerHTML = "";  // Clear suggestions
+                });
+                suggestions.appendChild(li);
+              });
+            })
+            .catch(error => console.error("Error:", error));
+        }
+      });
+
+
+      document.getElementById("add-restaurant-form").addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(event.target);
+          fetch('/add_restaurant/', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+              alert(data.message); // Success message
+              event.target.reset();
+              document.getElementById("search-input").value = "";
+              formContainer.style.display = "none";
+          })
+          .catch(error => {
+              alert('Error adding restaurant!');
+          });
+      });
+    </script>
+</section>
+
+{% endblock%}

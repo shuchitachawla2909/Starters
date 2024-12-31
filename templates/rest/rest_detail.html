@@ -1,0 +1,30 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+  <section class="rest_detail section " id="rest_detail">
+    <div class="container">
+      <div class="restaurant-card">
+        <div class="restaurant-image">
+          {% if restaurant.image %}
+          <img src="{{ restaurant.image.url }}" alt="rest-image">
+          {% else %}
+            <img src="{% static 'assets/images/default-rest.png' %}" alt="default-rest-image" >
+          {% endif %}
+        </div>
+        <div class="restaurant-info">
+          <h1 class="restaurant-name">{{ restaurant.name }}</h1>
+          <p class="restaurant-address"><strong>Address:</strong> {{ restaurant.address }}</p>
+          <p class="restaurant-rating"><strong>Rating:</strong> {{ restaurant.rating }}</p>
+          <p class="restaurant-posted-by"><strong>Posted by:</strong> {{ restaurant.posted_by }}</p>
+          <p class="restaurant-distance"><strong>Distance from College:</strong> {{ restaurant.distance }}km</p>
+          {% if restaurant.description %}
+            <p class="restaurant-description"><strong>Description:</strong> {{ restaurant.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+
+{% endblock %}

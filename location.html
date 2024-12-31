@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Restaurant</title>
+</head>
+<body>
+  <h1>Add Restaurant</h1>
+  <input type="text" id="search-input" placeholder="Search for a restaurant">
+  <ul id="autocomplete-suggestions"></ul>
+  <button id="add-manually">Add Manually</button>
+
+  <div id="restaurant-form" style="display: none;">
+    <h2>Restaurant Details</h2>
+    <form id="add-restaurant-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required><br><br>
+
+      <label for="address">Address:</label>
+      <input type="text" id="address" name="address"><br><br>
+
+      <label for="tags">Tags (e.g., Cafe, Fast Food):</label>
+      <input type="text" id="tags" name="tags"><br><br>
+
+      <label for="rating">Rating (1-5):</label>
+      <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+
+      <label for="review">Review:</label>
+      <textarea id="review" name="review"></textarea><br><br>
+
+      <button type="submit">Add Restaurant</button>
+    </form>
+  </div>
+
+  <script>
+
+    const apiKey = "5453fd136f59455389f1b49116c65013";
+    const searchInput = document.getElementById("search-input");
+    const suggestions = document.getElementById("autocomplete-suggestions");
+    const boundingBox = "filter=rect:82.9547896186507,25.20074192459107,83.05172449423014,25.310975518087687";
+    const formContainer = document.getElementById("restaurant-form");
+    const nameField = document.getElementById("name");
+    const addManuallyButton = document.getElementById("add-manually");
+    const addressField = document.getElementById("address");
+
+    addManuallyButton.addEventListener("click", () => {
+      formContainer.style.display = "block"; // Show the form
+      nameField.value = ""; // Clear any pre-filled values
+      addressField.value = "";
+    });
+
+    // Autocomplete functionality
+    searchInput.addEventListener("input", () => {
+      const text = searchInput.value;
+      if (text.length > 2) {
+        fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(text)}&${boundingBox}&format=json&apiKey=${apiKey}`)
+          .then(response => response.json())
+          .then(result => {
+            suggestions.innerHTML = "";
+            result.results.forEach(item => {
+              const li = document.createElement("li");
+              li.textContent = item.formatted;
+              li.addEventListener("click", () => {
+                nameField.value = item.name || ""; // Set name if available
+                addressField.value = item.formatted;
+                
+                formContainer.style.display = "block"; // Show the form
+                suggestions.innerHTML = ""; // Clear suggestions
+              });
+              suggestions.appendChild(li);
+            });
+          })
+          .catch(error => console.error("Error:", error));
+      }
+    });
+
+    // Form submission (to backend)
+    document.getElementById("add-restaurant-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = nameField.value.trim();
+      const rating = document.getElementById("rating").value.trim();
+
+      if (!name) {
+        alert("Name is required!");
+        return; // Stop submission if name is empty
+      }
+
+      if (!rating || rating < 1 || rating > 5) {
+        alert("Rating is required and must be between 1 and 5!");
+        return; // Stop submission if rating is invalid
+      }
+      const formData = {
+        name: nameField.value,
+        address: addressField.value,
+        tags: document.getElementById("tags").value,
+        rating: document.getElementById("rating").value,
+        review: document.getElementById("review").value
+      };
+
+      console.log("Restaurant Data Submitted:", formData);
+      alert("Restaurant added successfully!");
+    });
+  </script>
+</body>
+</html>

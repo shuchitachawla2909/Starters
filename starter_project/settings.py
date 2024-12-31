@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'crispy_forms',
     'crispy_bootstrap5',
+    'geopy',
     #custom Apps
     'rest.apps.restConfig',
     'userauths',

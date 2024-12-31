@@ -79,18 +79,29 @@
 
          <!--==================== REST ====================-->
          <section class="rest section" id="rest">
-          <div class="rest_container container grid">
-            <div class="rest_cards grid">
-              {%for restaurant in restaurants%}
-                <article class="rest_card">
-                  <img src="{{restaurant.image.url}}" alt="rest-image" class="rest_card-img">
-                  <div class="rest_info grid">
-                    <h2 class="rest_card-name">{{ restaurant.name }}</h2>
-                    <h3 class="rest_card-address">{{ restaurant.address }}</h3>
-                    <h3 class="rest_card-rating">Rating: {{ restaurant.rating }}</h3>
-                    <p class="rest_card-posted-by">Posted by: {{ restaurant.posted_by }}</p>
-                  </div>              
 
+          <a href="{% url 'rest:add_restaurant' %}">
+            <button>Add Restaurant</button>
+          </a>
+          <div class="rest_container container grid">
+
+            <div class="rest_cards grid">
+              {% for restaurant in restaurants %}
+                <article class="rest_card">
+                  <a href="{% url 'rest:restaurant_detail' restaurant.id %}">
+                    {% if restaurant.image %}
+                      <img src="{{ restaurant.image.url }}" alt="rest-image" class="rest_card-img">
+                    {% else %}
+                      <img src="{% static 'assets/images/default-rest.png' %}" alt="default-rest-image" class="rest_card-img">
+                    {% endif %}
+                    <div class="rest_info">
+                      <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+                      <h3 class="rest_card-address">{{ restaurant.address }}</h3>
+                      <h3 class="rest_card-rating">Rating: {{ restaurant.rating }}</h3>
+                      <p class="rest_card-posted-by">Posted by: {{ restaurant.posted_by }}</p>
+                      <p class="rest_card-distance">Distance from College: {{ restaurant.distance }}</p>
+                    </div>
+                  </a>  
                 </article>
               {% endfor %}
             </div>

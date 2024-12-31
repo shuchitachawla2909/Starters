@@ -5,5 +5,5 @@ from .models import Restaurant
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'cuisine_type', 'rating', 'posted_by', 'date_posted')
-    search_fields = ('name', 'cuisine_type')
+    list_display = ('name', 'address','rating', 'posted_by', 'date_posted')
+    search_fields = ('name','address')
