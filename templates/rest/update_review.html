@@ -1,0 +1,28 @@
+
+
+
+
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+  <section class="update section " id="update">
+    <div class="container">
+      <form method="POST">
+        {% csrf_token %}
+        <label for="rating">Rating:</label>
+        <input type="number" name="rating" id="rating" value="{{ review.rating }}" step="0.1" min="1.0" max="5.0" required>
+      
+        <label for="review">Review:</label>
+        <textarea name="review" id="review" required>{{ review.review }}</textarea>
+      
+        <button type="submit">Update Review</button>
+      </form>
+      
+      <a href="{% url 'rest:restaurant_detail' pk=review.restaurant.pk %}">Cancel</a>
+    </div>
+
+
+
+  </section>
+
+{% endblock %}

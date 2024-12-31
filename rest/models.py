@@ -20,6 +20,12 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
     
+    def calculate_average_rating(self):
+        ratings = self.ratings.all()
+        average = sum(r.rating for r in ratings) / ratings.count() if ratings.exists() else 0
+        self.rating = average
+        self.save()
+    
 
     def calculate_distance(self, college_lat, college_lon):
         if self.latitude and self.longitude:

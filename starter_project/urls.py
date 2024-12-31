@@ -7,12 +7,14 @@ from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
 from userauths import views as user_views
-
+from rest.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("rest.urls")),
     path('users/', include("userauths.urls")),
+    path('get-rests/', get_rests, name='get_rests'),
+    
 ]
 
 
