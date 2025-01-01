@@ -1,103 +1,241 @@
-{% extends 'partials/base.html'%}
-{% load static %}
-{% block content %}
-  <section class="rest section" id="rest">
-      <div class="rest_container grid">
-
-        <div class="rest_data">
-          <h3 class="rest_subtitle">
-            Add some good places to everyone's list.
-          </h3>
-          <h1 class="rest_title">
-            Visit the Best
-          </h1>
-          <p class="rest_description">
-          </p>
-        </div>
-
-        {%for resturant in restaurants%}
-          <div class="rest_cards grid">
-            <article class="rest_card">
-              {% if restaurant_images.image %}
-                <img src="restaurant_images.image.url" alt="" class="rest_card-img">
-              {% else %}
-                <img src="{% static 'assets/images/starters-logo (2).png'%}" alt="" class="rest_card-img">
-
-              {% endif %}
-              <div class="rest_info grid">
-                <h2 class="rest_card-name">{{ resturant.name }}</h2>
-                <h3 class="rest_card-address">{{ resturant.address }}</h3>
-                <h3 class="rest_card-rating">Rating: {{ resturant.rating }}</h3>
-                <p class="rest_card-posted-by">Posted by: {{ resturant.posted_by }}</p>
-              </div>
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'assets/css/style.css'%}">
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css"/>
+  <title>Register</title>
+</head>
 
 
-              
+<body>
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="#" class="nav_logo">
+        
+        <img src="{% static 'assets/images/starters-logo.png'%}" class="nav_logo-img">
+      </a>
+      <div class="nav_menu" id="nav-menu">
+        <ul class="nav_list">
+          <li class="nav_item">
+            <a href="{% url 'rest:home' %}" class="nav_link active-link">Home</a>
+          </li>
 
-            </article>
-          </div>
-        {% endfor %}
+          <li class="nav_item">
+            <a href="{% url 'rest:restaurants' %}" class="nav_link">Restaurants</a>
+          </li>
 
+          <li class="nav_item">
+            <a href="#explore" class="nav_link">Explore</a>
+          </li>
+          {% if request.user.is_authenticated %}
+          <li class="nav_item">
+            <a href="{% url 'userauths:profile' %}" class="nav_link">Profile</a>
+          </li>
+          <li class="nav_item">
+            <a href="{% url 'userauths:sign-out' %}" class="nav_link">Sign Out</a>
+          </li>
+
+
+          {% else %}
+            {% if request.path == '/users/sign-in/' %}
+              <li class="nav_item">
+                <a href="{% url 'userauths:sign-up' %}" class="nav_link">Sign Up</a>
+              </li>
+            {% else %}
+              <li class="nav_item">
+                <a href="{% url 'userauths:sign-in' %}" class="nav_link">Sign In</a>
+              </li>
+            {% endif %}
+          {% endif %}
+        
+        <!-- close button -->
+        </ul>
+        <div class="nav_close" id="nav-close"><i class="ri-close-fill"></i></div>
       </div>
+
+      <!-- toggle button -->
+      <div class="nav_toggle" id="nav-toggle">
+        <i class="ri-menu-line"></i>
+      </div>
+    </nav>
+     
+  </header>
+
+  <main>
+  <section class="search_rest section" id="search_rest">
+    <div class="container">
+        <div id="autocomplete" class="autocomplete">
+          <input class="autocomplete-input" />
+          <ul class="autocomplete-result-list"></ul>
+        </div>
+    </div>
+  </main>
+  </section>
+
+  <section class="rest section" id="rest">
+
+    <a href="{% url 'rest:add_restaurant' %}">
+      <button>Add Restaurant</button>
+    </a>
+    <div class="rest_container container grid">
+      <div class="rest_data">
+        <h3 class="rest_subtitle">
+          Add some good places to everyone's list.
+        </h3>
+        <h1 class="rest_title">
+          Visit the Best
+        </h1>
+        <p class="rest_description">
+        </p>
+      </div>
+  
+      <div class="rest_cards grid">
+        {% for restaurant in restaurants %}
+          <article class="rest_card">
+            <a href="{% url 'rest:restaurant_detail' restaurant.id %}">
+              {% if restaurant.image %}
+                <img src="{{ restaurant.image.url }}" alt="rest-image" class="rest_card-img">
+              {% else %}
+                <img src="{% static 'assets/images/default-rest.png' %}" alt="default-rest-image" class="rest_card-img">
+              {% endif %}
+              <div class="rest_info">
+                <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+                <h3 class="rest_card-address">{{ restaurant.address }}</h3>
+                <h3 class="rest_card-rating">Rating: {{ restaurant.rating }}</h3>
+                <p class="rest_card-distance">Distance from College: {{ restaurant.distance }} km</p>
+              </div>
+            </a>  
+          </article>
+        {% endfor %}
+      </div>
+    </div>
     
-
-
-
+  
+  
       
    </section>
+   
 
-{% endblock %}
+  
 
-<!-- if restaurant_images.image else static('assets/images/starters-logo (2).png') -->
+  <footer class="footer">
+    <div class="footer_container container grid">
+      <div class="footer_content grid">
+        <div>
+          <a href="#" class="footer_logo"><img src="{% static 'assets/images/starters-logo.png'%}" class="footer_logo-img"></a>
+          <p class="footer_description">Explore places like never before.
 
-<!-- <img src="{% static 'assets/images/varanasi-night.jpg'%}"
-srcset="{% static 'assets/images/varanasi-night.jpg' %} 768w,
-{% static 'assets/images/home-bg.jpg' %} 1023w"
-alt="home image" class="home_bg">
-<div class="home_shadow"></div>
-<div class="home_container container grid">
-  <div class="home_data">
-    <h3 class="home_subtitle">
-      Welcome to a Foody and Moody Banaras
-    </h3>
-    <h1 class="home_title">
-      Explore the Hits of a New City
-    </h1>
-    <p class="home_description">
-    </p>
-    <a href="#" class="button">
-      Start Exploring Now <i class="ri-arrow-right-line"></i>
-    </a>
-  </div>
+          </p>
+        </div>
+        <div class="footer_data grid">
+          <div class="footer_groups">
+            <h3 class="footer_title">Social</h3>
+            <ul class="footer_links">
+              <li>
+                <a href="#" class="footer_link"><i class='bx bxl-linkedin-square'></i>LinkedIn</a>
+              </li>
 
-  <div class="home_cards grid">
-    <article class="home_card">
-      <img src="{% static 'assets/images/home-card-cafe.png'%}" alt="home image" class="home_card-img">
-      <h3 class="home_card-title">Cafes</h3>
-      <div class="home_card-shadow"></div>
-    </article>
+              <li>
+                <a href="#" class="footer_link"><i class='bx bxl-instagram' ></i>Instagram</a>
+              </li>
+              
+              <li>
+                <a href="#" class="footer_link"><i class='bx bxl-github' ></i>Github</a>
+              </li>
+            </ul>
+          </div>
 
-    <article class="home_card">
-      <img src="{% static 'assets/images/home-card-restaurant.jpg'%}" alt="home image" class="home_card-img">
-      <h3 class="home_card-title">Restaurants</h3>
-      <div class="home_card-shadow"></div>
-    </article>
+          <div class="footer_groups">
+            <h3 class="footer_title">Account</h3>
+            <ul class="footer_links">
+              <li>
+                <a href="#" class="footer_link">Profile</a>
+              </li>
+              {% if request.user.is_authenticated %}
+                <li class="nav_item">
+                  <a href="{% url 'userauths:sign-out'%}" class="footer_link">Sign Out</a>
+                </li>
+              {% else %}
+                <li class="nav_item">
+                  <a href="{% url 'userauths:sign-in'%}" class="footer_link">Sign In</a>
+                </li>
+              {% endif %}
 
-    <article class="home_card">
-      <img src="{% static 'assets/images/home-card-local.jpg'%}" alt="home image" class="home_card-img">
-      <h3 class="home_card-title">Locals</h3>
-      <div class="home_card-shadow"></div>
-    </article>
+            </ul>
+          </div>
 
-    <article class="home_card">
-      <img src="{% static 'assets/images/home-card-party.jpg'%}" alt="home image" class="home_card-img">
-      <h3 class="home_card-title">Party</h3>
-      <div class="home_card-shadow"></div>
-    </article>
-    <article class="home_card">
-      <img src="{% static 'assets/images/home-card-desserts.jpg'%}" alt="home image" class="home_card-img">
-      <h3 class="home_card-title">Desserts</h3>
-      <div class="home_card-shadow"></div>
-    </article>
-  </div>
-</div> -->
+        </div>
+      </div>
+    </div>
+     
+  </footer>
+  
+
+  <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+  <script>
+    new Autocomplete('#autocomplete', {
+      search: input => {
+        console.log(input);
+        if (!input.trim()) {
+          return new Promise(resolve => resolve([])); // Return empty array if input is empty
+        }
+        const url = `/get-rests/?search=${input}`;
+        return new Promise(resolve => {
+          fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              resolve(data.payload);  // Make sure you're accessing 'payload' correctly
+            });
+        });
+      },
+      renderResult: (result, props)=>{
+        if(!result.name){
+          return `
+                <li class="no-result">
+                    <div class="no-result-text">Sorry, could not find what you're looking for.</div>
+                    <div>
+                        <a href="/add_restaurant" class="add-link">
+                            Want to add it yourself?
+                        </a>
+                    </div>
+                </li>
+            `;
+        }
+        
+        let group=''
+        if(result.index% 3==0){
+          group=`<li class="group">Group</li>`;
+        }
+        return `
+        ${group}
+        <li ${props}>
+          <a href="/restaurant/${result.id}" class="autocomplete-link">
+            <div class="wiki-title">
+              ${result.name}
+            </div>
+          </a>
+        </li>
+
+        `;
+      },
+      getResultValue: result => result.name
+    });
+  </script>
+
+  <!--=============== SCROLLREVEAL ===============-->
+  <script src="{% static 'assets/js/scrollreveal.min.js'%}"></script>
+
+  <!--=============== MAIN JS ===============-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
+  <script src="{% static 'assets/js/script.js'%}"></script>
+
+</body>
+</html>

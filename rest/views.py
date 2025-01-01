@@ -7,11 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 def home(request):
-    restaurants=Restaurant.objects.all()
-    context={
-        'restaurants':restaurants
-    }
-    return render(request, 'rest/index.html',context)
+    top_restaurants = Restaurant.objects.order_by('-rating')[:6]
+    
+    return render(request, 'rest/index.html', {
+        'restaurants': top_restaurants
+    })
 
 def restaurants(request):
     context={
@@ -137,35 +137,30 @@ def delete_review(request, review_id):
     return redirect('rest:restaurant_detail', pk=review.restaurant.pk)
 
 def get_rests(request):
-    payload = []
+    payload = []  # Start with an empty payload
+    
     search = request.GET.get('search', '')  # Get search query, default is empty string
     
     if search:
         # If there is a search query, filter the restaurants by name
         objs = Restaurant.objects.filter(name__icontains=search)  # Case-insensitive search
         
-        for obj in objs:
-            payload.append({
-                'rest': obj.name,  # Access individual Restaurant object fields, not QuerySet
-                'address': obj.address,
-                'rating': obj.rating
-            })
+        # Populate the payload with the filtered results
+        payload = [
+            {   
+                'id': obj.id,
+                'name': obj.name,  
+            }
+            for obj in objs
+        ]
         
-        return JsonResponse({
-            'status': True,
-            'payload': payload
-        })
+        if not payload:
+            # If no results are found, return a message in the payload
+            payload = [{'message': 'No restaurants found.'}]
     
-    # If no search query, just return all restaurants
-    objs = Restaurant.objects.all()
-    for obj in objs:
-        payload.append({
-            'rest': obj.name,  # Access individual Restaurant object fields
-            'address': obj.address,
-            'rating': obj.rating
-        })
-    
+    # Return the JsonResponse with the payload
     return JsonResponse({
         'status': True,
         'payload': payload
     })
+

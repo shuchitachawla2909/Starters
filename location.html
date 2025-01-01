@@ -3,104 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Restaurant</title>
+  <title>Search</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css"
+  />
 </head>
 <body>
-  <h1>Add Restaurant</h1>
-  <input type="text" id="search-input" placeholder="Search for a restaurant">
-  <ul id="autocomplete-suggestions"></ul>
-  <button id="add-manually">Add Manually</button>
 
-  <div id="restaurant-form" style="display: none;">
-    <h2>Restaurant Details</h2>
-    <form id="add-restaurant-form">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required><br><br>
-
-      <label for="address">Address:</label>
-      <input type="text" id="address" name="address"><br><br>
-
-      <label for="tags">Tags (e.g., Cafe, Fast Food):</label>
-      <input type="text" id="tags" name="tags"><br><br>
-
-      <label for="rating">Rating (1-5):</label>
-      <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
-
-      <label for="review">Review:</label>
-      <textarea id="review" name="review"></textarea><br><br>
-
-      <button type="submit">Add Restaurant</button>
-    </form>
+  <div class="search" id="search">
+    <div id="autocomplete" class="autocomplete">
+      <input class="autocomplete-input" />
+      <ul class="autocomplete-result-list"></ul>
+    </div>
   </div>
 
+  <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
   <script>
-
-    const apiKey = "5453fd136f59455389f1b49116c65013";
-    const searchInput = document.getElementById("search-input");
-    const suggestions = document.getElementById("autocomplete-suggestions");
-    const boundingBox = "filter=rect:82.9547896186507,25.20074192459107,83.05172449423014,25.310975518087687";
-    const formContainer = document.getElementById("restaurant-form");
-    const nameField = document.getElementById("name");
-    const addManuallyButton = document.getElementById("add-manually");
-    const addressField = document.getElementById("address");
-
-    addManuallyButton.addEventListener("click", () => {
-      formContainer.style.display = "block"; // Show the form
-      nameField.value = ""; // Clear any pre-filled values
-      addressField.value = "";
-    });
-
-    // Autocomplete functionality
-    searchInput.addEventListener("input", () => {
-      const text = searchInput.value;
-      if (text.length > 2) {
-        fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(text)}&${boundingBox}&format=json&apiKey=${apiKey}`)
-          .then(response => response.json())
-          .then(result => {
-            suggestions.innerHTML = "";
-            result.results.forEach(item => {
-              const li = document.createElement("li");
-              li.textContent = item.formatted;
-              li.addEventListener("click", () => {
-                nameField.value = item.name || ""; // Set name if available
-                addressField.value = item.formatted;
-                
-                formContainer.style.display = "block"; // Show the form
-                suggestions.innerHTML = ""; // Clear suggestions
-              });
-              suggestions.appendChild(li);
+    new Autocomplete('#autocomplete', {
+      search: input => {
+        console.log(input);
+        const url = `/get-rests/?search=${input}`; // Corrected the quotes here
+        return new Promise((resolve) => {
+          fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              resolve(data.payload);  // Make sure you're accessing 'payload' correctly
             });
-          })
-          .catch(error => console.error("Error:", error));
+        });
+      },
+      onSubmit: result => {
+        console.log(result);
       }
-    });
-
-    // Form submission (to backend)
-    document.getElementById("add-restaurant-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = nameField.value.trim();
-      const rating = document.getElementById("rating").value.trim();
-
-      if (!name) {
-        alert("Name is required!");
-        return; // Stop submission if name is empty
-      }
-
-      if (!rating || rating < 1 || rating > 5) {
-        alert("Rating is required and must be between 1 and 5!");
-        return; // Stop submission if rating is invalid
-      }
-      const formData = {
-        name: nameField.value,
-        address: addressField.value,
-        tags: document.getElementById("tags").value,
-        rating: document.getElementById("rating").value,
-        review: document.getElementById("review").value
-      };
-
-      console.log("Restaurant Data Submitted:", formData);
-      alert("Restaurant added successfully!");
     });
   </script>
+
 </body>
 </html>
+
+
+
+
+
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+<section class="rest section" id="rest">
+
+  <a href="{% url 'rest:add_restaurant' %}">
+    <button>Add Restaurant</button>
+  </a>
+  <div class="rest_container container grid">
+    <div class="rest_data">
+      <h3 class="rest_subtitle">
+        Add some good places to everyone's list.
+      </h3>
+      <h1 class="rest_title">
+        Visit the Best
+      </h1>
+      <p class="rest_description">
+      </p>
+    </div>
+
+    <div class="rest_cards grid">
+      {% for restaurant in restaurants %}
+        <article class="rest_card">
+          <a href="{% url 'rest:restaurant_detail' restaurant.id %}">
+            {% if restaurant.image %}
+              <img src="{{ restaurant.image.url }}" alt="rest-image" class="rest_card-img">
+            {% else %}
+              <img src="{% static 'assets/images/default-rest.png' %}" alt="default-rest-image" class="rest_card-img">
+            {% endif %}
+            <div class="rest_info">
+              <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+              <h3 class="rest_card-address">{{ restaurant.address }}</h3>
+              <h3 class="rest_card-rating">Rating: {{ restaurant.rating }}</h3>
+              <p class="rest_card-distance">Distance from College: {{ restaurant.distance }} km</p>
+            </div>
+          </a>  
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+
+    
+ </section>
+ 
+{% endblock %}
