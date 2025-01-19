@@ -428,6 +428,7 @@ header{
 .footer{
   padding-block: 2.5rem;
   background-color: var(--container-color);
+  margin-top: 2.5rem;
 
 }
 
@@ -870,10 +871,6 @@ header{
   position: relative;
 }
 
-.rest_container{
-  position: relative;
-  padding-top: 8rem;
-}
 
 .rest_data{
   text-align: center;
@@ -896,18 +893,43 @@ header{
 
 
 .rest_cards{
-  grid-template-columns: 300px;
-
+  padding: 15px 0px;
+  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  row-gap: 40px;
   justify-content: center;
 }
 
 .rest_card{
+  min-height: 385px;
+  row-gap: 10px;  
+  display: flex;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
+  align-items: center;
+  justify-content: space-between;
 }
-.rest_card-img{
-  transition: transform 0.4s;
+.rest_card-img-container{
+  width: 100%;
+  height: 205px;
+  
+  
+  position: relative;
+  overflow: hidden;
 
+}
+
+.rest_card-img{
+  
+  transition: transform 0.2s ease;
+  position: absolute;
+
+  
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  
+  
 }
 
 .rest_card-shadow{
@@ -922,16 +944,18 @@ header{
 }
 
 .rest_info{
+  align-content:baseline;
+  min-height: 170px;
   padding: 0.5rem;
   row-gap: 0.1rem;
   background-color: rgba(128, 128, 128, 0.798);
   border-radius: 6px;
-  transition: transform 0.4s;
 }
 
 .rest_card-name{
   font-size: var(--h3-font-size);
   color: var(--title-color);
+  margin-bottom: 8px;
 
 }
 
@@ -939,28 +963,50 @@ header{
   font-size: var(--body-font);
   color: var(--title-color);
   font-family: var(--second-font);
+  margin-bottom: 8px;
 
 }
 .rest_card-rating{
   font-size: var(--body-font);
   color: var(--text-color);
   font-family: var(--second-font);
+  margin-bottom: 8px;
 }
 .rest_card-posted-by{
   font-size: var(--body-font);
   color: var(--text-color);
   font-family: var(--second-font);
+  margin-bottom: 8px;
 }
 
-.rest_card:hover .rest_card-img{
-  transform: scale(1.1);
+.rest_card-img-container:hover .rest_card-img{
+  transform: scale(1.2);
+  
+
+}
+.rest-buttons{
+  display: flex;
+  justify-content: center;
+  column-gap: 40px;
+}
+.rest-buttons button{
+  padding: 10px 15px;
+  border-radius: 10px;
+  transition: transform 0.4s ease;
+}
+.rest-buttons button:hover{
+  background-color: gray; 
+  color: white; 
+  transform: scale(1.2)
 
 }
 
+
+/* 
 .rest_card:hover .rest_info{
   
   transform: scale(0.9);
 
-}
+}  */
 
 

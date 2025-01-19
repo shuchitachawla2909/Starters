@@ -31,9 +31,21 @@
         <label for="longitude">Longitude:</label>
         <input type="text" id="longitude" name="longitude" readonly><br><br>
 
-        <!-- Tags -->
         <label for="tags">Tags (e.g., Cafe, Fast Food):</label>
-        <input type="text" id="tags" name="tags"><br><br>
+        <select id="tag-dropdown" name="tags" multiple required>
+            <option value="" disabled>Select tags</option>
+            {% for tag in tags %}
+                <option value="{{ tag.name }}">{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        <div id="selected-tags">
+            <!-- Selected tags will be displayed here -->
+        </div><br><br>
+
+        <!-- Input for Adding New Tag -->
+        <label for="new-tag">Add New Tag (if any):</label>
+        <input type="text" id="new-tag" name="new_tag" placeholder="Enter a new tag">
+        <button type="button" id="add-tag-button">Add Tag</button><br><br>
 
         <!-- Rating -->
         <label for="rating">Rating (1-5):</label>
@@ -50,8 +62,79 @@
         <button type="submit">Add Restaurant</button>
     </form>
     </div>
-
     <script>
+      
+
+      document.getElementById("add-tag-button").addEventListener("click", function() {
+      const newTag = document.getElementById("new-tag").value.trim();
+      if (newTag) {
+        // Send the new tag to the server via AJAX
+        fetch("{% url 'rest:add_tag' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: JSON.stringify({ tag_name: newTag })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Tag added successfully:", newTag);
+            // If tag added successfully, update the dropdown dynamically
+            const tagDropdown = document.getElementById("tag-dropdown");
+            const newOption = document.createElement("option");
+            newOption.value = newTag;
+            newOption.textContent = newTag;
+            tagDropdown.appendChild(newOption);
+
+            newOption.selected = true;
+
+            // Clear the new tag input field
+            document.getElementById("new-tag").value = '';
+            } else {
+              alert("Failed to add tag.");
+            }
+          })
+          .catch(error => {
+            console.error("Error adding tag:", error);
+            alert("An error occurred while adding the tag.");
+          });
+        } else {
+          alert("Please enter a tag name.");
+        }
+      });
+
+      
+      document.getElementById("tag-dropdown").addEventListener("change", function() {
+      const selectedOptions = Array.from(this.selectedOptions);
+      const selectedTags = selectedOptions.map(option => option.value);
+
+      const selectedTagsContainer = document.getElementById("selected-tags");
+      
+      selectedTags.forEach(tag => {
+        if (!Array.from(selectedTagsContainer.children).some(child => child.textContent.includes(tag))) {
+            const tagElement = document.createElement("span");
+            tagElement.classList.add("tag");
+            tagElement.textContent = tag;
+
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "X";
+            removeButton.onclick = function () {
+                tagElement.remove();
+                const option = document.querySelector(`#tag-dropdown option[value='${tag}']`);
+                if (option) option.selected = false;
+            };
+
+            tagElement.appendChild(removeButton);
+            selectedTagsContainer.appendChild(tagElement);
+        }
+      });
+    });
+
+
+      
+
         const apiKey = "5453fd136f59455389f1b49116c65013";
         const searchInput = document.getElementById("search-input");
         const suggestions = document.getElementById("autocomplete-suggestions");
@@ -64,7 +147,15 @@
         const longitudeField = document.getElementById("longitude");
 
         addManuallyButton.addEventListener("click", () => {
+          latitudeField.style.backgroundColor="gray";
+          longitudeField.style.backgroundColor="gray";
+
+          latitudeField.disabled = true; // Make the cursor inactive for latitude
+          longitudeField.disabled = true;
+
+
           formContainer.style.display = "block"; // Show the form
+
           nameField.value = ""; // Clear any pre-filled values
           addressField.value = "";
         });
@@ -85,7 +176,9 @@
                 li.addEventListener("click", () => {
                   nameField.value = item.name || ""; // Set name if available
                   addressField.value = item.formatted;
-
+                  latitudeField.style.backgroundColor = "white";
+                  longitudeField.style.backgroundColor = "white";
+                  fieldsDisabled = false; 
                   // Populate latitude and longitude fields
                   latitudeField.value = item.lat || "";  // Auto-fill latitude
                   longitudeField.value = item.lon || "";  // Auto-fill longitude
@@ -104,7 +197,17 @@
       document.getElementById("add-restaurant-form").addEventListener("submit", (event) => {
           event.preventDefault();
 
+          const selectedTags = Array.from(document.getElementById("tag-dropdown").selectedOptions)
+          .map(option => option.value);
+        
           const formData = new FormData(event.target);
+
+          formData.delete("tags");
+
+          selectedTags.forEach(tag => formData.append("tags", tag));
+
+
+
           fetch('/add_restaurant/', {
               method: 'POST',
               body: formData
@@ -121,6 +224,10 @@
           });
       });
     </script>
+
+
 </section>
+
+
 
 {% endblock%}

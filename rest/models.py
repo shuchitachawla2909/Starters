@@ -4,6 +4,10 @@ from django.conf import settings
 from geopy.distance import geodesic
 import requests
 
+
+
+    
+
 class Restaurant(models.Model):
     name = models.CharField(max_length=255)
     address = models.TextField(blank=True)  
@@ -11,7 +15,6 @@ class Restaurant(models.Model):
     distance = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)  # Latitude from Geoapify API
     longitude = models.FloatField(null=True, blank=True)  # Longitude from Geoapify API
-    tags = models.CharField(max_length=255, blank=True)  # You can use a TextField for multiple tags or a ManyToMany field
     image = models.ImageField(upload_to='restaurant_images', default='restaurant_images/default-rest.png',blank=True,null=True)
     description = models.TextField(blank=True, null=True) # Description about the restaurant
     date_posted=models.DateTimeField(default=timezone.now)
@@ -46,6 +49,13 @@ class Restaurant(models.Model):
         # Save the restaurant with the distance calculated
         super().save(*args, **kwargs)
 
+class Tag(models.Model):
+    name=models.CharField(max_length=50,unique=True)
+    restaurants = models.ManyToManyField(Restaurant,related_name='tags',blank=True)
+    
+    
+    def __str__(self):
+        return self.name
 
 class RatingReview(models.Model):
     restaurant = models.ForeignKey(Restaurant, related_name="ratings", on_delete=models.CASCADE)

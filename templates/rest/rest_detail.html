@@ -20,6 +20,14 @@
           {% if restaurant.description %}
             <p class="restaurant-description"><strong>Description:</strong> {{ restaurant.description }}</p>
           {% endif %}
+          
+          <p class="restaurant-tags"><strong>Tags:</strong>
+            {% for tag in restaurant.tags.all %}
+            <ul> {{tag.name}}</ul>
+            {% endfor%}
+            </p>
+
+          
         </div>
       </div>
 

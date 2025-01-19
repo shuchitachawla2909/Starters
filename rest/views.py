@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
 from django.http import JsonResponse
-from .models import Restaurant, RatingReview
+from .models import Restaurant, RatingReview,Tag
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+import json
 
 def home(request):
     top_restaurants = Restaurant.objects.order_by('-rating')[:6]
@@ -18,60 +19,94 @@ def restaurants(request):
         'restaurants':Restaurant.objects.all()
              }
     return render(request, 'rest/restaurants.html',context)
-
+login_required
 def add_restaurant(request):
     if request.method == "POST":
-        # Get data from the form submission
-        name = request.POST.get("name")
-        address = request.POST.get("address")
-        latitude = request.POST.get("latitude")
-        longitude = request.POST.get("longitude")
-        tags = request.POST.get("tags")
-        rating = request.POST.get("rating")
-        review = request.POST.get("review")
-        image = request.FILES.get("image")
-        
-        
-        # Validation: Make sure name and rating are provided
-        if not name or not rating:
-            return JsonResponse({"error": "Name and rating are required."}, status=400)
-        
-        # Create and save the restaurant
-        restaurant = Restaurant(
-            name=name,
-            address=address,
-            latitude=latitude,
-            longitude=longitude,
-            tags=tags,
-            rating=rating,
-            image=image,
-            posted_by=request.user
-        )
-        restaurant.save()
-        
-        # Optionally, create a review (if provided) when adding the restaurant
-        if review:
-            RatingReview.objects.create(
-                restaurant=restaurant,
-                user=request.user,
-                rating=rating,
-                review=review
+        try:
+            # Get data from the form submission
+            name = request.POST.get("name")
+            address = request.POST.get("address")
+            latitude = request.POST.get("latitude")
+            longitude = request.POST.get("longitude")
+            description = request.POST.get("description", "")
+            tags = request.POST.getlist("tags")
+            image = request.FILES.get("image")
+            rating = request.POST.get("rating")  # Optional rating
+            review = request.POST.get("review", "")  # Optional review
+
+            # Validation: Make sure name is provided
+            if not name or not rating:
+                return JsonResponse({"error": "Name and rating are required."}, status=400)
+            
+            # Create and save the restaurant
+            restaurant = Restaurant.objects.create(
+                name=name,
+                address=address,
+                latitude=latitude,
+                longitude=longitude,
+                image=image,
+                description=description,
+                posted_by=request.user
             )
-        RatingReview.objects.create(
-            restaurant=restaurant,
-            user=request.user,
-            rating=rating,
-            review=review or ""  # Use an empty string if no review is provided
-        )
-        
-        # Recalculate the average rating
-        restaurant.calculate_average_rating()
+
+            # Add selected tags
+            for tag_name in tags:
+                tag, created = Tag.objects.get_or_create(name=tag_name)
+                restaurant.tags.add(tag)
+
+            # Optionally, add a review if a rating and review are provided
+            if rating:
+                RatingReview.objects.create(
+                    restaurant=restaurant,
+                    user=request.user,
+                    rating=rating,
+                    review=review
+                )
+
+            # Recalculate the restaurant's average rating
+            restaurant.calculate_average_rating()
+
+            # Save restaurant
+            restaurant.save()
+
+            return redirect('rest:restaurant_detail', pk=restaurant.pk)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    # Fetch existing tags to show in the dropdown
+    tags = Tag.objects.all()
+
+    return render(request, "rest/add_restaurant.html", {"tags": tags})
 
 
-        return redirect('rest:restaurant_detail', pk=restaurant.pk)
 
 
-    return render(request, "rest/add_restaurant.html")  # Use the HTML template for GET requests
+@login_required
+def add_tag(request):
+    if request.method == 'POST':
+        try:
+            # Parse the JSON data
+            data = json.loads(request.body)
+            tag_name = data.get('tag_name')
+
+            if not tag_name:
+                return JsonResponse({'success': False, 'message': 'Tag name is missing'})
+
+            # Create or get the tag
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+
+            if created:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'message': 'Tag already exists'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
 
 @login_required
 def restaurant_detail(request,pk):
@@ -100,6 +135,8 @@ def restaurant_detail(request,pk):
         'reviews':reviews
     }
     return render(request,'rest/rest_detail.html',context)
+
+
 
 
 @login_required
@@ -163,4 +200,14 @@ def get_rests(request):
         'status': True,
         'payload': payload
     })
+
+def restaurants_by_tag(request,tag_name):
+    tag=get_object_or_404(Tag,name=tag_name)
+    restaurants=tag.restaurants.all()
+    return render(request,'restaurants_by_tag.html',{'tag':tag,'restaurant':restaurants})
+
+
+
+
+
 

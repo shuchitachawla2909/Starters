@@ -14,6 +14,8 @@ urlpatterns = [
     path('restaurant/<int:pk>/', views.restaurant_detail, name='restaurant_detail'),
     path('restaurant/<int:review_id>/update/', views.update_review, name='update_review'),
     path('restaurant/<int:review_id>/delete/', views.delete_review, name='delete_review'),
+    path('tag/<str:tag_name>/', views.restaurants_by_tag, name='restaurants_by_tag'),
+    path('add_tag/', views.add_tag, name='add_tag'),
 ]
 
 if settings.DEBUG:
