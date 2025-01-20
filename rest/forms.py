@@ -1,7 +1,14 @@
 from django import forms
-from .models import Restaurant, RatingReview
+from .models import Restaurant, RatingReview,Tag
 
 class RestaurantForm(forms.ModelForm):
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Select Tags"
+    )
+    
     class Meta:
         model = Restaurant
         fields = ['name', 'address', 'rating', 'tags', 'description', 'image']

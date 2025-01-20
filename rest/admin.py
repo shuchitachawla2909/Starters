@@ -5,8 +5,12 @@ from .models import Restaurant,RatingReview,Tag
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address','rating', 'posted_by', 'date_posted')
+    list_display = ('name', 'address','rating', 'posted_by', 'date_posted','get_tags')
     search_fields = ('name','address')
+
+    def get_tags(self, obj):
+        return ", ".join([tag.name for tag in obj.tags.all()])
+    get_tags.short_description = 'Tags'
 
 admin.site.register(RatingReview)
 

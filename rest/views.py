@@ -19,7 +19,8 @@ def restaurants(request):
         'restaurants':Restaurant.objects.all()
              }
     return render(request, 'rest/restaurants.html',context)
-login_required
+
+@login_required
 def add_restaurant(request):
     if request.method == "POST":
         try:
@@ -29,12 +30,12 @@ def add_restaurant(request):
             latitude = request.POST.get("latitude")
             longitude = request.POST.get("longitude")
             description = request.POST.get("description", "")
-            tags = request.POST.getlist("tags")
-            image = request.FILES.get("image")
             rating = request.POST.get("rating")  # Optional rating
             review = request.POST.get("review", "")  # Optional review
+            image = request.FILES.get("image")
+            tags = request.POST.getlist("tags")  # Get selected tags as a list
 
-            # Validation: Make sure name is provided
+            # Validation: Make sure name and rating are provided
             if not name or not rating:
                 return JsonResponse({"error": "Name and rating are required."}, status=400)
             
@@ -69,12 +70,16 @@ def add_restaurant(request):
             # Save restaurant
             restaurant.save()
 
-            return redirect('rest:restaurant_detail', pk=restaurant.pk)
+            return JsonResponse({
+                'success':True,
+                'message':'Restaurant added successfully',
+                'redirect_url':f'/restaurant/{restaurant.id}/'
+            })
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
-    # Fetch existing tags to show in the dropdown
+    # Fetch existing tags to show in the dropdown (checkbox)
     tags = Tag.objects.all()
 
     return render(request, "rest/add_restaurant.html", {"tags": tags})

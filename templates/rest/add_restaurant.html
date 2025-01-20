@@ -31,21 +31,26 @@
         <label for="longitude">Longitude:</label>
         <input type="text" id="longitude" name="longitude" readonly><br><br>
 
-        <label for="tags">Tags (e.g., Cafe, Fast Food):</label>
-        <select id="tag-dropdown" name="tags" multiple required>
-            <option value="" disabled>Select tags</option>
-            {% for tag in tags %}
-                <option value="{{ tag.name }}">{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        <div id="selected-tags">
-            <!-- Selected tags will be displayed here -->
-        </div><br><br>
+        <p class="restaurant-tags">
+          <strong>Tags:</strong>
+          {% for tag in tags %}
+          <ul>
+              <li>
+                  <label for="tag_{{ tag.id }}">
+                      <input type="checkbox" id="tag_{{ tag.id }}" name="tags" value="{{ tag.name }}">
+                      {{ tag.name }}
+                  </label>
+              </li>
+          </ul>
+          {% endfor %}
+      </p><br><br>
 
-        <!-- Input for Adding New Tag -->
-        <label for="new-tag">Add New Tag (if any):</label>
-        <input type="text" id="new-tag" name="new_tag" placeholder="Enter a new tag">
-        <button type="button" id="add-tag-button">Add Tag</button><br><br>
+        <!-- <label for="tags">Tags (e.g., Cafe, Fast Food):</label><br>
+        {% for tag in tags %}
+            <input type="checkbox" name="tags" value="{{ tag.name }}" id="tag_{{ tag.id }}">
+            <label for="tag_{{ tag.id }}">{{ tag.name }}</label><br>
+        {% endfor %}
+        <br> -->
 
         <!-- Rating -->
         <label for="rating">Rating (1-5):</label>
@@ -62,172 +67,143 @@
         <button type="submit">Add Restaurant</button>
     </form>
     </div>
-    <script>
-      
 
-      document.getElementById("add-tag-button").addEventListener("click", function() {
-      const newTag = document.getElementById("new-tag").value.trim();
-      if (newTag) {
-        // Send the new tag to the server via AJAX
-        fetch("{% url 'rest:add_tag' %}", {
-          method: "POST",
+    <script>
+      const apiKey = "5453fd136f59455389f1b49116c65013";
+      const searchInput = document.getElementById("search-input");
+      const suggestions = document.getElementById("autocomplete-suggestions");
+      const boundingBox = "filter=rect:82.9047896186507,25.15074192459107,83.10172449423014,25.360975518087687";
+      const formContainer = document.getElementById("restaurant-form");
+      const nameField = document.getElementById("name");
+      const addManuallyButton = document.getElementById("add-manually");
+      const addressField = document.getElementById("address");
+      const latitudeField = document.getElementById("latitude");
+      const longitudeField = document.getElementById("longitude");
+
+      addManuallyButton.addEventListener("click", () => {
+        latitudeField.style.backgroundColor = "gray";
+        longitudeField.style.backgroundColor = "gray";
+
+        latitudeField.disabled = true; // Make the cursor inactive for latitude
+        longitudeField.disabled = true;
+
+        formContainer.style.display = "block"; // Show the form
+
+        nameField.value = ""; // Clear any pre-filled values
+        addressField.value = "";
+      });
+
+      // Autocomplete functionality without debounce
+      searchInput.addEventListener("input", () => {
+        const text = searchInput.value;
+
+        // Only proceed if the search text is longer than 2 characters
+        if (text.length > 2) {
+            fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(text)}&${boundingBox}&format=json&apiKey=${apiKey}`)
+              .then(response => {
+                // Check if the response was successful
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then(result => {
+                // Check if the result contains valid data
+                if (!result.results || result.results.length === 0) {
+                  console.error("No results found for the query.");
+                  suggestions.innerHTML = `<li class="list-group-item">No results found</li>`;
+                  return; // Stop further processing if no results are found
+                }
+
+                // Clear existing suggestions before adding new ones
+                suggestions.innerHTML = "";
+
+                // Add new suggestions
+                result.results.forEach(item => {
+                  const li = document.createElement("li");
+                  li.textContent = item.formatted;
+
+                  // Event listener to handle selection of an address
+                  li.addEventListener("click", () => {
+                    nameField.value = item.name || ""; // Set name if available
+                    addressField.value = item.formatted;
+                    latitudeField.style.backgroundColor = "white";
+                    longitudeField.style.backgroundColor = "white";
+
+                    // Populate latitude and longitude fields
+                    latitudeField.value = item.lat || "";  // Auto-fill latitude
+                    longitudeField.value = item.lon || "";  // Auto-fill longitude
+
+                    formContainer.style.display = "block";  // Show the form
+                    suggestions.innerHTML = "";  // Clear suggestions
+                  });
+
+                  suggestions.appendChild(li);
+                });
+              })
+              .catch(error => {
+                // Catch errors such as network issues or API errors
+                console.error("An error occurred while fetching autocomplete results:", error);
+                suggestions.innerHTML = `<li class="list-group-item text-danger">Error fetching results. Please try again later.</li>`;
+              });
+        }
+      });
+
+      document.getElementById("add-restaurant-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        // Collect the selected tags from the checkboxes
+        const selectedTags = [];
+        const checkboxes = document.querySelectorAll('input[name="tags"]:checked');
+        checkboxes.forEach(checkbox => selectedTags.push(checkbox.value));
+
+        const formData = new FormData(event.target);
+
+        // Add selected tags to the formData
+        selectedTags.forEach(tag => {
+          formData.append("tags", tag);
+        });
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Submit the form data
+        fetch('/add_restaurant/', {
+          method: 'POST',
+          body: formData,
           headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-          },
-          body: JSON.stringify({ tag_name: newTag })
+            'X-CSRFToken': csrfToken // Pass CSRF token in the header
+          }
         })
         .then(response => response.json())
         .then(data => {
+          console.log("Parsed data:", data);
+
           if (data.success) {
-            console.log("Tag added successfully:", newTag);
-            // If tag added successfully, update the dropdown dynamically
-            const tagDropdown = document.getElementById("tag-dropdown");
-            const newOption = document.createElement("option");
-            newOption.value = newTag;
-            newOption.textContent = newTag;
-            tagDropdown.appendChild(newOption);
+            alert("Restaurant added successfully!");
+            window.location.href = data.redirect_url; // Redirect to the new restaurant page
+            // event.target.reset(); // Reset the form
 
-            newOption.selected = true;
+            // // Reset selected tags container and hidden input
+            // document.getElementById("selected-tags").innerHTML = "";
 
-            // Clear the new tag input field
-            document.getElementById("new-tag").value = '';
-            } else {
-              alert("Failed to add tag.");
-            }
-          })
-          .catch(error => {
-            console.error("Error adding tag:", error);
-            alert("An error occurred while adding the tag.");
-          });
-        } else {
-          alert("Please enter a tag name.");
-        }
-      });
-
-      
-      document.getElementById("tag-dropdown").addEventListener("change", function() {
-      const selectedOptions = Array.from(this.selectedOptions);
-      const selectedTags = selectedOptions.map(option => option.value);
-
-      const selectedTagsContainer = document.getElementById("selected-tags");
-      
-      selectedTags.forEach(tag => {
-        if (!Array.from(selectedTagsContainer.children).some(child => child.textContent.includes(tag))) {
-            const tagElement = document.createElement("span");
-            tagElement.classList.add("tag");
-            tagElement.textContent = tag;
-
-            const removeButton = document.createElement("button");
-            removeButton.textContent = "X";
-            removeButton.onclick = function () {
-                tagElement.remove();
-                const option = document.querySelector(`#tag-dropdown option[value='${tag}']`);
-                if (option) option.selected = false;
-            };
-
-            tagElement.appendChild(removeButton);
-            selectedTagsContainer.appendChild(tagElement);
-        }
-      });
-    });
+            // Optionally hide the form container (if applicable)
+            // const formContainer = document.getElementById("form-container");
+            // if (formContainer) {
+            //   formContainer.style.display = "none";
+            // }
+          } else {
+            alert('Error: ' + data.message); // Show error message
+          }
 
 
-      
 
-        const apiKey = "5453fd136f59455389f1b49116c65013";
-        const searchInput = document.getElementById("search-input");
-        const suggestions = document.getElementById("autocomplete-suggestions");
-        const boundingBox = "filter=rect:82.9547896186507,25.20074192459107,83.05172449423014,25.310975518087687";
-        const formContainer = document.getElementById("restaurant-form");
-        const nameField = document.getElementById("name");
-        const addManuallyButton = document.getElementById("add-manually");
-        const addressField = document.getElementById("address");
-        const latitudeField = document.getElementById("latitude");
-        const longitudeField = document.getElementById("longitude");
+          
 
-        addManuallyButton.addEventListener("click", () => {
-          latitudeField.style.backgroundColor="gray";
-          longitudeField.style.backgroundColor="gray";
-
-          latitudeField.disabled = true; // Make the cursor inactive for latitude
-          longitudeField.disabled = true;
-
-
-          formContainer.style.display = "block"; // Show the form
-
-          nameField.value = ""; // Clear any pre-filled values
-          addressField.value = "";
+        })
+        .catch(error => {
+          console.error("Error in fetch:", error); 
+          alert("Error adding restaurant: " + error.message); // Show error message
         });
-
-      // Autocomplete functionality
-      searchInput.addEventListener("input", () => {
-        const text = searchInput.value;
-        if (text.length > 2) {
-          fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(text)}&${boundingBox}&format=json&apiKey=${apiKey}`)
-            .then(response => response.json())
-            .then(result => {
-              suggestions.innerHTML = "";  // Clear existing suggestions
-              result.results.forEach(item => {
-                const li = document.createElement("li");
-                li.textContent = item.formatted;
-
-                // Event listener to handle selection of an address
-                li.addEventListener("click", () => {
-                  nameField.value = item.name || ""; // Set name if available
-                  addressField.value = item.formatted;
-                  latitudeField.style.backgroundColor = "white";
-                  longitudeField.style.backgroundColor = "white";
-                  fieldsDisabled = false; 
-                  // Populate latitude and longitude fields
-                  latitudeField.value = item.lat || "";  // Auto-fill latitude
-                  longitudeField.value = item.lon || "";  // Auto-fill longitude
-
-                  formContainer.style.display = "block";  // Show the form
-                  suggestions.innerHTML = "";  // Clear suggestions
-                });
-                suggestions.appendChild(li);
-              });
-            })
-            .catch(error => console.error("Error:", error));
-        }
-      });
-
-
-      document.getElementById("add-restaurant-form").addEventListener("submit", (event) => {
-          event.preventDefault();
-
-          const selectedTags = Array.from(document.getElementById("tag-dropdown").selectedOptions)
-          .map(option => option.value);
-        
-          const formData = new FormData(event.target);
-
-          formData.delete("tags");
-
-          selectedTags.forEach(tag => formData.append("tags", tag));
-
-
-
-          fetch('/add_restaurant/', {
-              method: 'POST',
-              body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-              alert(data.message); // Success message
-              event.target.reset();
-              document.getElementById("search-input").value = "";
-              formContainer.style.display = "none";
-          })
-          .catch(error => {
-              alert('Error adding restaurant!');
-          });
       });
     </script>
-
-
 </section>
-
-
-
-{% endblock%}
+{% endblock %}

@@ -19,6 +19,9 @@ class Restaurant(models.Model):
     description = models.TextField(blank=True, null=True) # Description about the restaurant
     date_posted=models.DateTimeField(default=timezone.now)
     posted_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_DEFAULT,default=1)
+    tags = models.ManyToManyField('Tag', related_name='restaurants', blank=True)
+
+    
 
     def __str__(self):
         return self.name
@@ -51,7 +54,6 @@ class Restaurant(models.Model):
 
 class Tag(models.Model):
     name=models.CharField(max_length=50,unique=True)
-    restaurants = models.ManyToManyField(Restaurant,related_name='tags',blank=True)
     
     
     def __str__(self):
