@@ -4,14 +4,12 @@
 <section class="add_rest section" id="add_rest"> 
   <h1>Add Restaurant</h1>
   <input type="text" id="search-input" placeholder="Search for a restaurant">
-  <p>(Picks up location itself if it finds match, it takes a little time to load, so sit back and relax.)</p>
   <ul id="autocomplete-suggestions"></ul>
   <button id="add-manually">Add Manually</button>
   
 
   <div id="restaurant-form" style="display: none;">
     <h2>Restaurant Details</h2>
-    <p>Looks like you could not find a match from the search bar, no worries you can add it manually.</p>
     <!-- Form for Adding Restaurant -->
     <form id="add-restaurant-form" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -30,6 +28,9 @@
 
         <label for="longitude">Longitude:</label>
         <input type="text" id="longitude" name="longitude" readonly><br><br>
+
+        <label for="main_image">Upload Restaurant Image (Optional):</label>
+        <input type="file" name="main_image" id="main_image" accept="image/*"><br><br>
 
         <p class="restaurant-tags">
           <strong>Tags:</strong>
@@ -60,8 +61,8 @@
         <label for="review">Review:</label>
         <textarea id="review" name="review"></textarea><br><br>
 
-        <label for="image">Upload Image:</label>
-        <input type="file" name="image" id="image" accept="image/*">
+        <label for="review_image">Upload Review Image (Optional):</label>
+        <input type="file" name="review_image" id="review_image" accept="image/*"><br><br>
 
         <!-- Submit Button -->
         <button type="submit">Add Restaurant</button>
@@ -179,18 +180,10 @@
 
           if (data.success) {
             alert("Restaurant added successfully!");
-            window.location.href = data.redirect_url; // Redirect to the new restaurant page
-            // event.target.reset(); // Reset the form
-
-            // // Reset selected tags container and hidden input
-            // document.getElementById("selected-tags").innerHTML = "";
-
-            // Optionally hide the form container (if applicable)
-            // const formContainer = document.getElementById("form-container");
-            // if (formContainer) {
-            //   formContainer.style.display = "none";
-            // }
-          } else {
+            window.location.href = data.redirect_url;
+          } 
+          
+          else {
             alert('Error: ' + data.message); // Show error message
           }
 

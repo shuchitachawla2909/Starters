@@ -1,24 +1,28 @@
-
-
-
-
 {% extends 'partials/base.html'%}
 {% load static %}
 {% block content %}
   <section class="update section " id="update">
     <div class="container">
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="rating">Rating:</label>
+        <h2 class="update-heading">Edit Review</h2>
+        <div class="update-form">
+          <label for="rating">Rating:</label>
         <input type="number" name="rating" id="rating" value="{{ review.rating }}" step="0.1" min="1.0" max="5.0" required>
       
         <label for="review">Review:</label>
         <textarea name="review" id="review" required>{{ review.review }}</textarea>
-      
+
+        <label for="review_image">Review Image (Optional):</label>
+        <input type="file" name="review_image" id="review_image" accept="image/*">
+        </div>
+
+        
+        
         <button type="submit">Update Review</button>
       </form>
       
-      <a href="{% url 'rest:restaurant_detail' pk=review.restaurant.pk %}">Cancel</a>
+      <a href="{% url 'rest:restaurant_detail' pk=review.restaurant.pk %}" ><button >Cancel</button></a>
     </div>
 
 

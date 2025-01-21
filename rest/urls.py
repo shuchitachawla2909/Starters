@@ -15,6 +15,7 @@ urlpatterns = [
     path('restaurant/<int:review_id>/update/', views.update_review, name='update_review'),
     path('restaurant/<int:review_id>/delete/', views.delete_review, name='delete_review'),
     path('tag/<str:tag_name>/', views.restaurants_by_tag, name='restaurants_by_tag'),
+    path('restaurant/<int:restaurant_id>/update-image/', views.update_restaurant_image, name='update_restaurant_image'),
     # path('add_tag/', views.add_tag, name='add_tag'),
 ]
 

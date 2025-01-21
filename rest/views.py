@@ -32,9 +32,14 @@ def add_restaurant(request):
             description = request.POST.get("description", "")
             rating = request.POST.get("rating")  # Optional rating
             review = request.POST.get("review", "")  # Optional review
-            image = request.FILES.get("image")
+            main_image = request.FILES.get("main_image") 
+            review_image = request.FILES.get("review_image")
             tags = request.POST.getlist("tags")  # Get selected tags as a list
 
+            existing_restaurant = Restaurant.objects.filter(name=name, address=address).first()
+            if existing_restaurant:
+                return JsonResponse({"error": "A restaurant with the same name and address already exists."}, status=400)
+                
             # Validation: Make sure name and rating are provided
             if not name or not rating:
                 return JsonResponse({"error": "Name and rating are required."}, status=400)
@@ -45,7 +50,7 @@ def add_restaurant(request):
                 address=address,
                 latitude=latitude,
                 longitude=longitude,
-                image=image,
+                main_image=main_image,
                 description=description,
                 posted_by=request.user
             )
@@ -61,7 +66,8 @@ def add_restaurant(request):
                     restaurant=restaurant,
                     user=request.user,
                     rating=rating,
-                    review=review
+                    review=review,
+                    review_image=review_image
                 )
 
             # Recalculate the restaurant's average rating
@@ -98,30 +104,30 @@ def restaurants_by_tag(request, tag_name):
 
     return render(request, 'rest/restaurants_by_tag.html', context)
 
-@login_required
-def add_tag(request):
-    if request.method == 'POST':
-        try:
-            # Parse the JSON data
-            data = json.loads(request.body)
-            tag_name = data.get('tag_name')
+# @login_required
+# def add_tag(request):
+#     if request.method == 'POST':
+#         try:
+#             # Parse the JSON data
+#             data = json.loads(request.body)
+#             tag_name = data.get('tag_name')
 
-            if not tag_name:
-                return JsonResponse({'success': False, 'message': 'Tag name is missing'})
+#             if not tag_name:
+#                 return JsonResponse({'success': False, 'message': 'Tag name is missing'})
 
-            # Create or get the tag
-            tag, created = Tag.objects.get_or_create(name=tag_name)
+#             # Create or get the tag
+#             tag, created = Tag.objects.get_or_create(name=tag_name)
 
-            if created:
-                return JsonResponse({'success': True})
-            else:
-                return JsonResponse({'success': False, 'message': 'Tag already exists'})
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON data'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
+#             if created:
+#                 return JsonResponse({'success': True})
+#             else:
+#                 return JsonResponse({'success': False, 'message': 'Tag already exists'})
+#         except json.JSONDecodeError:
+#             return JsonResponse({'success': False, 'message': 'Invalid JSON data'})
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'message': str(e)})
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+#     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 
 @login_required
@@ -132,15 +138,18 @@ def restaurant_detail(request,pk):
     if request.method== 'POST':
         rating=request.POST.get('rating')
         review=request.POST.get('review')
+        review_image = request.FILES.get('review_image')
 
         user_review,created=RatingReview.objects.get_or_create(
             restaurant=restaurant,user=request.user,
-            defaults={'rating':rating,'review':review}
+            defaults={'rating':rating,'review':review,'review_image': review_image}
         )
         
         if not created:
             user_review.rating=rating
             user_review.review=review
+            if review_image:
+                user_review.review_image = review_image
             user_review.save()
 
         restaurant.calculate_average_rating()
@@ -162,10 +171,13 @@ def update_review(request, review_id):
     if request.method == 'POST':
         rating = request.POST.get('rating')
         review_text = request.POST.get('review')
+        review_image = request.FILES.get('review_image')
         
         # Update the review and rating
         review.rating = rating
         review.review = review_text
+        if review_image:
+            review.review_image = review_image
         review.save()
 
         # Recalculate the average rating after review update
@@ -218,8 +230,19 @@ def get_rests(request):
     })
 
 
+@login_required
+def update_restaurant_image(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
+    if request.method == "POST":
+        main_image = request.FILES.get("main_image")
+        if main_image:
+            restaurant.main_image = main_image
+            restaurant.save()
+            return redirect('rest:restaurant_detail', pk=restaurant.id)
+        
+        return redirect('rest:restaurant_detail', pk=restaurant.id)
 
-
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 

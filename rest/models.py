@@ -15,7 +15,7 @@ class Restaurant(models.Model):
     distance = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)  # Latitude from Geoapify API
     longitude = models.FloatField(null=True, blank=True)  # Longitude from Geoapify API
-    image = models.ImageField(upload_to='restaurant_images', default='restaurant_images/default-rest.png',blank=True,null=True)
+    main_image = models.ImageField(upload_to='restaurant_images',blank=True,null=True)
     description = models.TextField(blank=True, null=True) # Description about the restaurant
     date_posted=models.DateTimeField(default=timezone.now)
     posted_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_DEFAULT,default=1)
@@ -64,6 +64,7 @@ class RatingReview(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.DecimalField(max_digits=2, decimal_places=1)
     review = models.TextField(blank=True)
+    review_image = models.ImageField(upload_to='review_images', null=True, blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
 
     class Meta:

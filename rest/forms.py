@@ -11,7 +11,7 @@ class RestaurantForm(forms.ModelForm):
     
     class Meta:
         model = Restaurant
-        fields = ['name', 'address', 'rating', 'tags', 'description', 'image']
+        fields = ['name', 'address', 'rating', 'tags', 'description', 'main_image']
         widgets = {
             'rating': forms.NumberInput(attrs={'step': '0.1', 'min': '0', 'max': '5'})
         }
