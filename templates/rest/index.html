@@ -22,36 +22,65 @@
                 Start Exploring Now <i class="ri-arrow-right-line"></i>
               </a>
             </div>
+            
 
             <div class="home_cards grid">
+              <a href="{% url 'rest:restaurants_by_tag' 'cafe' %}">
+                <article class="home_card">
+                  <img src="{% static 'assets/images/home-card-cafe.png'%}" alt="home image" class="home_card-img">
+                  <h3 class="home_card-title">Cafes</h3>
+                  <div class="home_card-shadow"></div>
+                </article>
+              </a>
+              <a href="{% url 'rest:restaurants_by_tag' 'club' %}">
               <article class="home_card">
-                <img src="{% static 'assets/images/home-card-cafe.png'%}" alt="home image" class="home_card-img">
-                <h3 class="home_card-title">Cafes</h3>
+                <img src="{% static 'assets/images/club.jpg'%}" alt="home image" class="home_card-img">
+                <h3 class="home_card-title">Club</h3>
                 <div class="home_card-shadow"></div>
               </article>
+              </a>
 
+              <a href="{% url 'rest:restaurants_by_tag' 'order-in' %}">
               <article class="home_card">
-                <img src="{% static 'assets/images/home-card-restaurant.jpg'%}" alt="home image" class="home_card-img">
-                <h3 class="home_card-title">Restaurants</h3>
+                <img src="{% static 'assets/images/order-in.jpeg'%}" alt="home image" class="home_card-img">
+                <h3 class="home_card-title">Order-In</h3>
                 <div class="home_card-shadow"></div>
               </article>
+              </a>
 
-              <article class="home_card">
-                <img src="{% static 'assets/images/home-card-local.jpg'%}" alt="home image" class="home_card-img">
-                <h3 class="home_card-title">Locals</h3>
-                <div class="home_card-shadow"></div>
-              </article>
-
-              <article class="home_card">
-                <img src="{% static 'assets/images/home-card-party.jpg'%}" alt="home image" class="home_card-img">
-                <h3 class="home_card-title">Party</h3>
-                <div class="home_card-shadow"></div>
-              </article>
+              <a href="{% url 'rest:restaurants_by_tag' 'dessert' %}">
               <article class="home_card">
                 <img src="{% static 'assets/images/home-card-desserts.jpg'%}" alt="home image" class="home_card-img">
                 <h3 class="home_card-title">Desserts</h3>
                 <div class="home_card-shadow"></div>
               </article>
+              </a>
+
+              <a href="{% url 'rest:restaurants_by_tag' 'restaurant' %}">
+              <article class="home_card">
+                <img src="{% static 'assets/images/home-card-restaurant.jpg'%}" alt="home image" class="home_card-img">
+                <h3 class="home_card-title">Restaurants</h3>
+                <div class="home_card-shadow"></div>
+              </article>
+              </a>
+
+              <a href="{% url 'rest:restaurants_by_tag' 'local' %}">
+              <article class="home_card">
+                <img src="{% static 'assets/images/home-card-local.jpg'%}" alt="home image" class="home_card-img">
+                <h3 class="home_card-title">Locals</h3>
+                <div class="home_card-shadow"></div>
+              </article>
+              </a>
+
+              <a href="{% url 'rest:restaurants_by_tag' 'party' %}">
+              <article class="home_card">
+                <img src="{% static 'assets/images/home-card-party.jpg'%}" alt="home image" class="home_card-img">
+                <h3 class="home_card-title">Party</h3>
+                <div class="home_card-shadow"></div>
+              </article>
+              </a>
+
+
             </div>
           </div>
             
@@ -80,25 +109,51 @@
          <!--==================== REST ====================-->
          <section class="rest section" id="rest">
 
+          <h2>Explore Top Rated By People Round You</h2>
+
 
           <div class="rest_container container grid">
 
             <div class="rest_cards grid">
               {% for restaurant in restaurants %}
+
                 <article class="rest_card">
-                  <a href="{% url 'rest:restaurant_detail' restaurant.id %}" class="rest_card-img-container" >
-                    {% if restaurant.image %}
-                      <img src="{{ restaurant.image.url }}" alt="rest-image" class="rest_card-img">
-                    {% else %}
-                      <img src="{% static 'assets/images/default-rest.png' %}" alt="default-rest-image" class="rest_card-img">
-                    {% endif %}
-                  </a>
-                    <div class="rest_info">
-                      <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+                  
+                  <div class="rest-icons">                  {% for tag in restaurant.tags.all %}
+                    
+                    <img src="{% static 'assets/images/' %}/{{ tag.name }}.svg" class="rest-icon {{tag.name}}">
+                
+                  {% endfor %}</div>
+
+                      
+                  
+                    <div class="rest_info_main">
+                      <a href="{% url 'rest:restaurant_detail' restaurant.id %}">
+                        <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+                      
                       <h3 class="rest_card-address">{{ restaurant.address }}</h3>
-                      <h3 class="rest_card-rating">Rating: {{ restaurant.rating }}</h3>
-                      <p class="rest_card-distance">Distance from College: {{ restaurant.distance }} km</p>
+                      <p class="rest_card-distance">Distance from College: <span>{{ restaurant.distance }} km</span></p>
+                      <ul class="rest_tags">
+                        {% for tag in restaurant.tags.all %}
+                            <li>{{ tag.name }} | </li>
+                        {% endfor %}
+                    </ul>
+                      </a></div>
+                      <div class="rest_rating">
+                        <div class="stars">
+                          <i class='bx bxs-star' ></i>
+                          <i class='bx bxs-star' ></i>
+                          <i class='bx bxs-star' ></i>
+                          <i class='bx bxs-star' ></i>
+                          <i class='bx bxs-star-half' ></i>
+                        </div>
+
+                      <h3 class="rest_card-rating">{{ restaurant.rating }}</h3>
+                      
+
+                        
                     </div>
+                  </a>
                     
                 </article>
               {% endfor %}

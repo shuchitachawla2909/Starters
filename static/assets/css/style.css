@@ -33,6 +33,8 @@
   /*========== z index ==========*/
   --z-tooltip: 10;
   --z-fixed: 100;
+
+  --cafe-color:rgb(10, 91, 10);
 }
 
 
@@ -308,10 +310,13 @@ header{
 }
 
 .home_card{
+  height: 150px;
   position: relative;
   overflow: hidden;
 }
 .home_card-img{
+  
+  
   transition: transform 0.4s;
 }
 
@@ -869,8 +874,19 @@ header{
 
 .rest{
   position: relative;
+  background-color: black;
+  background: url('../images/vector.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
 }
 
+.rest h2{
+  text-align: center;
+  padding: 0.5rem;
+  margin: 1rem;
+}
 
 .rest_data{
   text-align: center;
@@ -893,14 +909,17 @@ header{
 
 
 .rest_cards{
+  margin: 1.5rem;
   padding: 15px 0px;
-  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
-  row-gap: 40px;
+  grid-template-columns: repeat(auto-fit,300px);
+  row-gap: 1.5rem;
   justify-content: center;
 }
 
 .rest_card{
-  min-height: 385px;
+  background-color: rgba(128, 128, 128, 0);
+
+  
   row-gap: 10px;  
   display: flex;
   flex-direction: column;
@@ -908,99 +927,168 @@ header{
   overflow: hidden;
   align-items: center;
   justify-content: space-between;
+  transition: transform 0.3s ease;
 }
-.rest_card-img-container{
+.rest-icons{
+  min-height: 70px;
+  position: relative;
   width: 100%;
-  height: 205px;
-  
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  justify-content: center;
+  row-gap: 5px;
+
+
+}
+
+
+.rest-icon{
   
   position: relative;
-  overflow: hidden;
+  width: 50px;
+  padding: 10px ;
+  margin: 2px;
 
+  background-color: wheat;
+  border-radius: 10px;
 }
 
-.rest_card-img{
-  
-  transition: transform 0.2s ease;
-  position: absolute;
 
-  
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  
-  
-}
 
-.rest_card-shadow{
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: linear-gradient(180deg,
-  hsla(0,0%,0%,0)50%,      
-  hsl(0,0%,0%)125%);
-}
 
-.rest_info{
+.rest_info_main{
+  cursor: pointer;
+
+  height: 250px;
   align-content:baseline;
-  min-height: 170px;
-  padding: 0.5rem;
+  padding: 0 1rem;
   row-gap: 0.1rem;
-  background-color: rgba(128, 128, 128, 0.798);
-  border-radius: 6px;
+  background-color:black;
+  box-shadow: inset 0 0 0 5px #e4e4e4;
+  width: 300px;
+}
+.stars{
+  color: rgb(199, 171, 12);
+  font-size: 1rem;
+  font-weight: 100;
+}
+
+.rest_rating{
+  width: 100%;
+  align-items:baseline;
+  display: flex;
+  column-gap: 0.5rem;
+  min-height: 50px;
+}
+.rest_card-rating{
+  font-size: var(--h3-font-size);
+  color: var(--title-color);
+  font-family: var(--second-font);
+}
+.rest_tags{
+  padding: 0;
+  font-size: var(--normal-font-size);
+  color: var(--title-color);
+  font-family: var(--second-font);
+  flex-wrap: wrap;
+
+  column-gap: 0.25rem;
 }
 
 .rest_card-name{
-  font-size: var(--h3-font-size);
+  font-size: var(--h2-font-size);
   color: var(--title-color);
-  margin-bottom: 8px;
+  padding: 0;
 
 }
 
 .rest_card-address{
-  font-size: var(--body-font);
-  color: var(--title-color);
-  font-family: var(--second-font);
-  margin-bottom: 8px;
-
-}
-.rest_card-rating{
-  font-size: var(--body-font);
+  font-size: var(--small-font-size);
   color: var(--text-color);
   font-family: var(--second-font);
-  margin-bottom: 8px;
-}
-.rest_card-posted-by{
-  font-size: var(--body-font);
-  color: var(--text-color);
-  font-family: var(--second-font);
-  margin-bottom: 8px;
-}
 
-.rest_card-img-container:hover .rest_card-img{
-  transform: scale(1.2);
   
 
+} 
+.rest_card-distance{
+  font-size: var(--small-font-size);
+  color: var(--text-color);
+  font-family: var(--second-font);
 }
+
+.rest_card-distance span{
+  font-size: var(--normal-font-size);
+  color: var(--title-color);
+}
+.rest_card-rating{
+  font-size: var(--h3-font-size);
+  color: var(--text-color);
+  font-family: var(--second-font);
+}
+.rest_card-posted-by{
+  font-size: var(--normal-font-size);
+  color: var(--text-color);
+  font-family: var(--second-font);
+}
+
+/* .rest_info:hover .rest_card{
+  transform: scale(1.15);
+  
+
+} */
+
+
 .rest-buttons{
   display: flex;
   justify-content: center;
-  column-gap: 40px;
+  column-gap: 2rem;
 }
 .rest-buttons button{
-  padding: 10px 15px;
+  background-color:black;
+  box-shadow: inset 0 0 0 2px #e4e4e4;
+  color: #e4e4e4;
+  padding: 1rem;
   border-radius: 10px;
-  transition: transform 0.4s ease;
+  transition: transform 0.2s ease;
+  width: 300px;
+  cursor: pointer;
 }
 .rest-buttons button:hover{
-  background-color: gray; 
+  
+  
   color: white; 
-  transform: scale(1.2)
+  transform: scale(1.1)
 
 }
 
+.cafe {
+  background-color: #c59c5e; /* Soft lavender for a cozy cafe vibe */
+}
+
+.party {
+  background-color: #FF5733; /* Vibrant orange for an energetic party mood */
+}
+
+.club {
+  background-color: #6A5ACD; /* Deep slate blue for a sophisticated club feel */
+}
+
+.restaurant {
+  background-color: #FFA07A; /* Warm salmon for a welcoming restaurant vibe */
+}
+
+.dessert {
+  background-color: #FFC0CB; /* Sweet pink for desserts */
+}
+
+.local {
+  background-color: #3CB371; /* Fresh medium sea green for local authenticity */
+}
+
+.order-in {
+  background-color: #FFD700; /* Bright gold for convenience and indulgence */
+}
 
 /* 
 .rest_card:hover .rest_info{

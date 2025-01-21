@@ -1,0 +1,24 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+  <section class="rest_by_tags section " id="rest_by_tags">
+    <div class="container">
+
+      <h2>{{ tag.name|upper }}</h2>
+
+      <ul>
+          {% for restaurant in restaurants %}
+              <li>
+                  <a href="{% url 'rest:restaurant_detail' pk=restaurant.pk %}">{{ restaurant.name }}</a>
+              </li>
+          {% empty %}
+              <p>No restaurants found with this tag.</p>
+          {% endfor %}
+      </ul>
+    
+    </div>
+
+
+  </section>
+
+{% endblock %}

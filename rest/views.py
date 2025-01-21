@@ -85,7 +85,18 @@ def add_restaurant(request):
     return render(request, "rest/add_restaurant.html", {"tags": tags})
 
 
+def restaurants_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    
+    # Get all restaurants associated with this tag
+    restaurants = tag.restaurants.all()
 
+    context = {
+        'tag': tag,
+        'restaurants': restaurants
+    }
+
+    return render(request, 'rest/restaurants_by_tag.html', context)
 
 @login_required
 def add_tag(request):
@@ -206,10 +217,6 @@ def get_rests(request):
         'payload': payload
     })
 
-def restaurants_by_tag(request,tag_name):
-    tag=get_object_or_404(Tag,name=tag_name)
-    restaurants=tag.restaurants.all()
-    return render(request,'restaurants_by_tag.html',{'tag':tag,'restaurant':restaurants})
 
 
 

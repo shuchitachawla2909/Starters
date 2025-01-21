@@ -22,10 +22,14 @@
           {% endif %}
           
           <p class="restaurant-tags"><strong>Tags:</strong>
-            {% for tag in restaurant.tags.all %}
-            <ul> {{tag.name}}</ul>
-            {% endfor%}
+            <ul>
+              {% for tag in restaurant.tags.all %}
+                  <li><a href="{% url 'rest:restaurants_by_tag' tag_name=tag.name %}"> {{ tag.name }} | </a></li>
+              {% endfor %}
+          </ul>
             </p>
+
+
 
           
         </div>
