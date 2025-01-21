@@ -80,8 +80,11 @@ def profile(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
     
+    saved_restaurants = request.user.profile.saved_restaurants.all()
+    
     context = {
         'u_form': u_form,
         'p_form': p_form,
+        'saved_restaurants': saved_restaurants,
     }
     return render(request, 'userauths/profile.html', context)

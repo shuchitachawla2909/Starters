@@ -19,9 +19,27 @@
     <h3>
       {{user.bio}}
     </h3></div>
-  </hr>
+    <div class="saved-rest">
+      <h2>Saved Restaurants</h2>
+      <ul>
+          {% for restaurant in saved_restaurants %}
+          <li>
+              <a href="{% url 'rest:restaurant_detail' restaurant.id %}" class="saved-a">{{ restaurant.name }}</a>
+          </li>
+          {% empty %}
+          <li>No restaurants saved yet.</li>
+          {% endfor %}
+      </ul>
+    </div>
+  
+  
+
+
 
   </div>
+
+
+
 
 
 

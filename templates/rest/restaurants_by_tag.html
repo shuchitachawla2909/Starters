@@ -1,24 +1,72 @@
 {% extends 'partials/base.html'%}
 {% load static %}
 {% block content %}
-  <section class="rest_by_tags section " id="rest_by_tags">
-    <div class="container">
+<section class="rest section" id="rest">
 
-      <h2>{{ tag.name|upper }}</h2>
-
-      <ul>
-          {% for restaurant in restaurants %}
-              <li>
-                  <a href="{% url 'rest:restaurant_detail' pk=restaurant.pk %}">{{ restaurant.name }}</a>
-              </li>
-          {% empty %}
-              <p>No restaurants found with this tag.</p>
-          {% endfor %}
-      </ul>
+  <div class="rest_container container grid">
+    <div class="by_tag">
+      
+      <h1 class="rest_title">
+        {{tag.name|upper}}
+      </h1>
+      
+                    
+        <img src="{% static 'assets/images/' %}/{{ tag.name }}.svg" class="rest-icon {{tag.name}}">
     
+      
+      
     </div>
 
 
-  </section>
+    <div class="rest_cards grid">
+      {% for restaurant in restaurants %}
+      <article class="rest_card">
+                
+        <div class="rest-icons">                  {% for tag in restaurant.tags.all %}
+          
+          <img src="{% static 'assets/images/' %}/{{ tag.name }}.svg" class="rest-icon {{tag.name}}">
+      
+        {% endfor %}</div>
+
+            
+        
+          <div class="rest_info_main">
+            <a href="{% url 'rest:restaurant_detail' restaurant.id %}">
+              <h2 class="rest_card-name">{{ restaurant.name }}</h2>
+            
+            <h3 class="rest_card-address">{{ restaurant.address }}</h3>
+            <p class="rest_card-distance">Distance from College: <span>{{ restaurant.distance }} km</span></p>
+            <ul class="rest_tags">
+              {% for tag in restaurant.tags.all %}
+                  <li>{{ tag.name }} | </li>
+              {% endfor %}
+          </ul>
+            </a></div>
+            <div class="rest_rating">
+              <div class="stars">
+                <i class='bx bxs-star' ></i>
+                <i class='bx bxs-star' ></i>
+                <i class='bx bxs-star' ></i>
+                <i class='bx bxs-star' ></i>
+                <i class='bx bxs-star-half' ></i>
+              </div>
+
+            <h3 class="rest_card-rating">{{ restaurant.rating }}</h3>
+            
+
+              
+          </div>
+        </a>
+          
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+
+    
+ </section>
+ 
 
 {% endblock %}

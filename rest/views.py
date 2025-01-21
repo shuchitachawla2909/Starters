@@ -5,7 +5,7 @@ from .models import Restaurant, RatingReview,Tag
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-import json
+import logging
 
 def home(request):
     top_restaurants = Restaurant.objects.order_by('-rating')[:6]
@@ -246,3 +246,21 @@ def update_restaurant_image(request, restaurant_id):
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def save_restaurant(request, restaurant_id):
+    logger.debug(f"Request for restaurant ID: {restaurant_id}")
+
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    profile = request.user.profile
+
+    if restaurant in profile.saved_restaurants.all():
+        profile.saved_restaurants.remove(restaurant)
+        logger.debug(f"Restaurant {restaurant_id} unsaved.")
+        return JsonResponse({'status': 'unsaved'})
+    else:
+        profile.saved_restaurants.add(restaurant)
+        logger.debug(f"Restaurant {restaurant_id} saved.")
+        return JsonResponse({'status': 'saved'})
