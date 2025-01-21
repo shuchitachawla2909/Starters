@@ -1363,3 +1363,76 @@ header{
 .update button:hover {
   background-color: hsl(0, 0%, 85%);
 }
+
+.profile{
+  padding-top: 20px;
+}
+/* Profile page*/
+
+.profile_container{
+  padding: 2rem;
+  margin: 0 2rem;
+  display: flex;
+  column-gap: 2rem;
+
+}
+
+.image-box{
+  width: 10rem;
+  height: 10rem;
+  object-fit: cover;
+
+}
+
+
+.profile-info h2{
+
+  font-size: var(--h2-font-size);
+  color: var(--title-color);
+  
+  
+
+}
+.profile-info h3{
+
+  font-size: var(--normal-font-size);
+  color: var(--text-color);
+  
+  
+
+}
+
+.form-container{
+  padding: 2rem;
+  margin: 2rem;
+}
+
+.form-group input{
+  background-color: var(--container-color);
+  color: var(--text-color);
+  width: auto;
+}
+.form-control{
+  background-color: var(--container-color);
+  color: var(--text-color);
+  width: auto;
+}
+
+
+
+.update-button {
+  padding: 0.5rem;
+  border-radius: 4px;
+  
+
+  background-color: var(--title-color);
+  color: var(--body-color);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 1.5rem;
+}
+
+.update-button:hover {
+  background-color: hsl(0, 0%, 85%);
+}

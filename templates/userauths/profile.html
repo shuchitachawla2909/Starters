@@ -4,10 +4,13 @@
 {% block content %}
 <section class="profile section" id="profile">
   <div class="profile_container">
-    <img src="{{user.profile.image.url}}" alt="profile-pic" class="profile_img" style="height: 10rem;">
-    <h3>
-      {{user.username}}
-    </h3>
+    <div class="image-box">
+      <img src="{{user.profile.image.url}}" alt="profile-pic" class="profile_img">
+    </div>
+    
+    <div class="profile-info"><h2>
+      {{user.username|upper}}
+    </h2>
     
     <h3>
       {{user.email}}
@@ -15,7 +18,8 @@
 
     <h3>
       {{user.bio}}
-    </h3>
+    </h3></div>
+  </hr>
 
   </div>
 
@@ -30,7 +34,7 @@
             {{ p_form|crispy }}
         </fieldset>
         <div class="form-group" style="margin-top: 10px;">
-            <button type="submit">Update</button>
+            <button type="submit" class="update-button">Update</button>
         </div>
     </form>
   </div>
