@@ -1367,16 +1367,18 @@ header{
   background-color: hsl(0, 0%, 85%);
 }
 
-.profile{
+/* .profile{
   padding-top: 20px;
-}
+} */
 /* Profile page*/
 
 .profile_container{
-  padding: 2rem;
-  margin: 0 2rem;
+  padding: 1rem;
+  margin: 0 1rem;
   display: flex;
   column-gap: 2rem;
+  flex-wrap: wrap;
+  row-gap: 4rem;
 
 }
 
@@ -1431,8 +1433,8 @@ header{
 }
 
 .form-container{
-  padding: 2rem;
-  margin: 2rem;
+  padding: 1rem;
+  margin: 1rem;
 }
 
 .form-group input{
@@ -1443,7 +1445,6 @@ header{
 .form-control{
   background-color: var(--container-color);
   color: var(--text-color);
-  width: auto;
 }
 
 
